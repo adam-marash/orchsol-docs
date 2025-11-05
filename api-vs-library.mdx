@@ -1,0 +1,155 @@
+---
+title: "API vs Library"
+description: "Choose your integration approach: REST API or JavaScript Library"
+---
+
+# Orchestra API vs Orchestra Library – Choose Your Integration
+
+Orchestra offers two integration approaches for payment orchestration. Both eliminate the complexity of managing multiple payment gateway integrations, but serve different architectural needs.
+
+## Your implementation choices
+
+### Orchestra API
+
+Orchestra API provides direct payment gateway orchestration via REST API. You send transaction data in our standardized format, we handle gateway-specific requirements, and return consistent JSON responses regardless of which gateway processes the payment. Since you handle card collection, this enables the use of third-party tokenization providers.
+
+**Best for:** Custom payment flows, full UI control, internal card management.
+
+### Orchestra Library
+
+Orchestra Library delivers a complete payment experience with pre-built UI components for both card and alternative payment methods. The JavaScript library handles payment collection, authentication, and processing automatically while keeping your business outside PCI-DSS scope. Built-in support for 3D Secure, OTP authentication, and modern payment methods means faster deployment.
+
+**Best for:** Rapid deployment, out-of-scope PCI compliance, modern payment experiences.
+
+## Feature comparison
+
+| Capability | Orchestra API | Orchestra Library |
+| --- | --- | --- |
+| **Integration Method** | REST API calls | JavaScript library |
+| **Payment Collection** | You handle card details (directly or through third-party tokenization) | We handle all payment details |
+| **PCI Compliance** | Your responsibility | You are out of scope |
+| **UI Control** | Full customization | Pre-built components |
+| **Gateway Failover** | ✓ Automatic | ✓ Automatic |
+| **Tokenization** | ✓ Orchestra or gateway | ✓ Orchestra or gateway |
+| **3D Secure/OTP** | Manual implementation | ✓ Built-in |
+| **Digital Wallets** | API integration required | ✓ Native support |
+| **Regional Methods** | API integration required | ✓ Native support |
+| **Deployment Speed** | Custom development | Rapid deployment |
+| **Payment Gateway Additions** | No additional cost | No additional cost |
+| **Payment Method Additions** | (Not applicable) | No additional cost |
+
+## Quick decision tree
+
+<Steps>
+  <Step title="Do you want rapid deployment with pre-built UI?">
+    → **Yes?** Use **[Orchestra Library](#orchestra-library)**
+
+    → **No?** Continue to next question
+  </Step>
+  <Step title="Do you need full control over the payment form?">
+    → **Yes?** Use **[Orchestra API](#orchestra-api)**
+
+    → **No?** Use **[Orchestra Library](#orchestra-library)**
+  </Step>
+  <Step title="Are you using third-party tokenization?">
+    → **Yes?** Use **[Orchestra API](#orchestra-api)**
+
+    → **No?** Either works; choose based on deployment speed vs. control
+  </Step>
+</Steps>
+
+## Detailed comparison
+
+### Choose API if you:
+
+- Have existing payment flows you want to integrate with
+- Need specific UI control and customization
+- Want to manage credit cards internally and/or use third-party tokenization providers
+- Prefer building custom experiences
+- Have a development team ready to implement payment forms
+
+**Next steps:** [Make Your First Charge with the API](/make-first-charge)
+
+### Choose Library if you:
+
+- Want rapid deployment with minimal code
+- Prefer to avoid PCI compliance scope
+- Need modern payment methods immediately
+- Want battle-tested, production-ready payment experiences
+- Prefer JavaScript-based integration over REST API calls
+
+**Next steps:** [Orchestra Library Documentation](/library) (coming soon)
+
+## Key differences explained
+
+### Payment Collection
+
+**API:** Your application collects card details (via your own form or third-party provider like Stripe Elements), then sends them to Orchestra for processing.
+
+**Library:** Orchestra's JavaScript library handles all payment collection and validation in the browser. You never see raw card data.
+
+### PCI Compliance
+
+**API:** You're responsible for PCI-DSS compliance when handling card details. Using third-party tokenization (like Stripe.js) can reduce scope, but you still need to validate security.
+
+**Library:** Orchestra handles all card details server-side. Your application is completely out of PCI-DSS scope.
+
+### Gateway Failover
+
+**Both:** Automatic. If your primary gateway is down, Orchestra routes to a backup gateway transparently.
+
+### 3D Secure & Authentication
+
+**API:** You must implement 3D Secure authentication flows manually. Send authentication data with your charge request.
+
+**Library:** Built-in. The library detects when 3D Secure is required and handles authentication automatically.
+
+### Digital Wallets & Regional Methods
+
+**API:** You integrate each wallet/method individually. Requires custom implementation for Apple Pay, Google Pay, local methods (iDEAL, Alipay, etc.).
+
+**Library:** Native support. Automatically offers available wallets and regional payment methods based on device and location.
+
+## Both approaches provide
+
+✓ Automatic payment gateway failover
+✓ Support for multiple payment gateways
+✓ New payment gateway additions at no cost
+✓ Comprehensive error handling
+✓ Transaction tracking and reporting
+✓ Full API documentation and support
+
+The choice comes down to **control vs. speed**. Need custom payment flows? Use the API. Want production-ready payment experiences fast? Use the Library.
+
+## Next steps
+
+<Columns cols={2}>
+  <Card
+    title="Get Started with API"
+    icon="code"
+    href="/getting-started"
+  >
+    Build custom payment flows with full control.
+  </Card>
+  <Card
+    title="Explore SDKs"
+    icon="cube"
+    href="/sdks"
+  >
+    Official libraries for Node.js, Python, and Go.
+  </Card>
+  <Card
+    title="Make Your First Charge"
+    icon="credit-card"
+    href="/make-first-charge"
+  >
+    Test the API with a sandbox charge.
+  </Card>
+  <Card
+    title="Library Docs"
+    icon="window"
+    href="/library"
+  >
+    Coming soon: JavaScript Library integration guide.
+  </Card>
+</Columns>

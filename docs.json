@@ -20,6 +20,7 @@
             "pages": [
               "index",
               "getting-started",
+              "api-vs-library",
               "make-first-charge",
               "sdks"
             ]
