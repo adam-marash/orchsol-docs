@@ -9,7 +9,7 @@
     "light": "#0080FF",
     "dark": "#0052A3"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://orchestrasolutions.com/wp-content/uploads/orchsol.svg",
   "navigation": {
     "tabs": [
       {
@@ -53,8 +53,8 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "https://orchestrasolutions.com/wp-content/uploads/orchestra.svg",
+    "dark": "https://orchestrasolutions.com/wp-content/uploads/orchestra.svg"
   },
   "navbar": {
     "links": [
