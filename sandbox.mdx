@@ -1,0 +1,294 @@
+---
+title: "Sandbox Environment"
+description: "Test your integration safely before going live"
+---
+
+# Sandbox Environment
+
+The Orchestra sandbox is a fully functional testing environment that lets you develop and validate your payment integration without processing real transactions.
+
+## Sandbox vs. Production
+
+| Feature | Sandbox | Production |
+|---------|---------|-----------|
+| Real transactions | No | Yes |
+| Real money | No | Yes |
+| Card processing | Simulated | Live |
+| Data persistence | Yes | Yes |
+| Rate limits | Relaxed | Standard |
+| Access | Immediate | Requires approval |
+
+## Getting started with sandbox
+
+1. **Create a sandbox account** at [orchestrasolutions.com/sandbox](https://orchestrasolutions.com/sandbox/)
+2. **Generate a sandbox API key** from your portal
+3. **Use sandbox endpoint:** `https://api.orchestrasolutions.com` with sandbox credentials
+4. **Test with sandbox data** (see below)
+
+## Sandbox test data
+
+### Test card numbers
+
+Use these card numbers in sandbox to simulate different card types and outcomes:
+
+<Tabs>
+  <Tab title="Visa">
+    **Success**
+    - Number: `4242424242424242`
+    - Expiry: Any future date
+    - CVC: Any 3 digits
+    - Result: Transaction succeeds
+
+    **Decline**
+    - Number: `4000000000000002`
+    - Expiry: Any future date
+    - CVC: Any 3 digits
+    - Result: Card declined
+  </Tab>
+  <Tab title="Mastercard">
+    **Success**
+    - Number: `5555555555554444`
+    - Expiry: Any future date
+    - CVC: Any 3 digits
+    - Result: Transaction succeeds
+
+    **Decline**
+    - Number: `5105105105105100`
+    - Expiry: Any future date
+    - CVC: Any 3 digits
+    - Result: Card declined
+  </Tab>
+  <Tab title="American Express">
+    **Success**
+    - Number: `378282246310005`
+    - Expiry: Any future date
+    - CVC: Any 4 digits
+    - Result: Transaction succeeds
+
+    **Decline**
+    - Number: `371449635398431`
+    - Expiry: Any future date
+    - CVC: Any 4 digits
+    - Result: Card declined
+  </Tab>
+</Tabs>
+
+### Test amounts
+
+For most gateways, any amount works in sandbox. Some gateways support amount-based outcomes:
+
+- **$0.01 - $9.99** — Standard processing
+- **$10.00** — May trigger 3D Secure in some gateways
+- **Amounts ending in .00** — Standard processing
+
+Check your payment gateway's sandbox documentation for specific amount triggers.
+
+### Test currency codes
+
+All ISO 4217 currency codes are supported in sandbox. Common ones:
+
+- `USD` — US Dollar
+- `EUR` — Euro
+- `GBP` — British Pound
+- `JPY` — Japanese Yen
+- `CAD` — Canadian Dollar
+- `AUD` — Australian Dollar
+
+## Using sandbox credentials
+
+You can test with any payment gateway supported by Orchestra. For this example, we'll use **Stripe**.
+
+1. **Create a Stripe sandbox account** at [stripe.com](https://stripe.com)
+2. **Get your Stripe test API key** from Stripe dashboard
+3. **Store it as a Payment Gateway Account** in Orchestra:
+
+<CodeGroup>
+```bash cURL
+curl -X PUT "https://api.orchestrasolutions.com/PaymentGatewayAccounts/my-stripe-test" \
+  -H "X-Api-Key: YOUR_SANDBOX_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymentGatewayName": "stripe",
+    "credentials": [
+      {
+        "key": "apiKey",
+        "value": "sk_test_YOUR_STRIPE_KEY"
+      }
+    ]
+  }'
+```
+
+```javascript Node.js
+const res = await fetch(
+  "https://api.orchestrasolutions.com/PaymentGatewayAccounts/my-stripe-test",
+  {
+    method: "PUT",
+    headers: {
+      "X-Api-Key": process.env.ORCHESTRA_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paymentGatewayName: "stripe",
+      credentials: [
+        {
+          key: "apiKey",
+          value: process.env.STRIPE_TEST_KEY
+        }
+      ]
+    })
+  }
+);
+```
+</CodeGroup>
+
+## Testing payment flows
+
+### Test a successful charge
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.orchestrasolutions.com/PaymentGateway/charge" \
+  -H "X-Api-Key: YOUR_SANDBOX_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 25.00,
+    "currency": "USD",
+    "paymentGatewayAccountName": "my-stripe-test",
+    "card": {
+      "cardHolderName": "Test User",
+      "cardNumber": "4242424242424242",
+      "expirationMonth": 12,
+      "expirationYear": 2025,
+      "cvv": "123"
+    },
+    "payerDetails": {
+      "clientIPAddress": "127.0.0.1",
+      "countryCode": "US"
+    }
+  }'
+```
+
+```javascript Node.js
+const res = await fetch(
+  "https://api.orchestrasolutions.com/PaymentGateway/charge",
+  {
+    method: "POST",
+    headers: {
+      "X-Api-Key": process.env.ORCHESTRA_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      amount: 25.00,
+      currency: "USD",
+      paymentGatewayAccountName: "my-stripe-test",
+      card: {
+        cardHolderName: "Test User",
+        cardNumber: "4242424242424242",
+        expirationMonth: 12,
+        expirationYear: 2025,
+        cvv: "123"
+      },
+      payerDetails: {
+        clientIPAddress: "127.0.0.1",
+        countryCode: "US"
+      }
+    })
+  }
+);
+```
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "operationType": "Charge",
+  "operationResultCode": "Success",
+  "operationResultDescription": "OK",
+  "amount": 25.00,
+  "currency": "USD",
+  "gatewayName": "stripe",
+  "gatewayReference": "ch_test_123abc",
+  "authorizationCode": "12345"
+}
+```
+
+### Test a declined charge
+
+Replace the card number with `4000000000000002` and repeat. You'll get:
+
+```json
+{
+  "operationType": "Charge",
+  "operationResultCode": "Rejected",
+  "operationResultDescription": "Card declined",
+  "gatewayResultDescription": "Your card was declined",
+  "amount": 25.00,
+  "currency": "USD"
+}
+```
+
+## Best practices
+
+### Use descriptive reference IDs
+
+Always send a `myRef` to track transactions in your system:
+
+```json
+{
+  "amount": 25.00,
+  "currency": "USD",
+  "myRef": "order-12345",
+  "card": { ... }
+}
+```
+
+This makes it easy to correlate Orchestra transactions with your internal records.
+
+### Test error scenarios
+
+- Declined cards
+- Invalid amounts
+- Unsupported currencies
+- Missing fields
+- Network timeouts (if your gateway supports it)
+
+### Monitor sandbox activity
+
+Log all sandbox requests to understand:
+- Gateway response times
+- Error patterns
+- Integration bottlenecks
+
+## Moving to production
+
+When you're ready to go live:
+
+1. **Request production access** from Orchestra support
+2. **Generate a production API key**
+3. **Update your gateway credentials** to use production keys
+4. **Verify your endpoint URL** — still `https://api.orchestrasolutions.com`
+5. **Run final tests** with production credentials
+6. **Deploy with confidence**
+
+<Warning>
+Production transactions are real. Test thoroughly in sandbox first. If you have questions, contact support before processing live payments.
+</Warning>
+
+## Troubleshooting
+
+### Sandbox transactions aren't showing up in my gateway
+
+- Verify you're using sandbox credentials (not production)
+- Check that your gateway's sandbox environment is enabled
+- Confirm you're using the correct merchant account
+
+### Cards that work in sandbox fail in production
+
+- Verify card details are correct
+- Check that 3D Secure is handled properly
+- Confirm your production gateway credentials are valid
+
+### Need help?
+
+Check the [API reference](/api-reference) for detailed endpoint documentation, or visit [GitHub Discussions](https://github.com/adam-marash/orchsol-docs/discussions) to ask the community.

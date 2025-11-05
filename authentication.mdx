@@ -1,0 +1,208 @@
+---
+title: "Authentication"
+description: "API key management and security best practices"
+---
+
+# Authentication
+
+All Orchestra API requests require authentication using an API key. This guide covers creating, managing, and securing your API keys.
+
+## Creating an API key
+
+Before making your first API call, you need to generate an API key in the Orchestra dashboard.
+
+1. Log in to your [developer portal](https://portal.epaytools.com/)
+2. Click **Settings** (top-right, under your name)
+3. Select **API Keys**
+4. Click **Create New Key**
+5. Enter a descriptive name (e.g., `Production`, `Development`, `CI/CD`)
+6. Choose the user to assign the key to
+7. Check **Assign it to my user** if desired
+8. Click **Save**
+
+A modal will display your new API key. **Copy it immediately** — you won't be able to view it again.
+
+<Warning>
+Store your API key securely. Treat it like a password. If compromised, rotate it immediately.
+</Warning>
+
+## Using your API key
+
+Include your API key in the `X-Api-Key` header of every request:
+
+<CodeGroup>
+```bash cURL
+curl -s "https://api.orchestrasolutions.com/Utils/apiKey" \
+  -H "X-Api-Key: YOUR_API_KEY"
+```
+
+```javascript Node.js
+const res = await fetch("https://api.orchestrasolutions.com/Utils/apiKey", {
+  headers: {
+    "X-Api-Key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+  }
+});
+```
+
+```python Python
+import requests
+
+response = requests.get(
+  "https://api.orchestrasolutions.com/Utils/apiKey",
+  headers={"X-Api-Key": "YOUR_API_KEY"}
+)
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+req, _ := http.NewRequest("GET", "https://api.orchestrasolutions.com/Utils/apiKey", nil)
+req.Header.Add("X-Api-Key", "YOUR_API_KEY")
+client := &http.Client{}
+resp, _ := client.Do(req)
+```
+</CodeGroup>
+
+## Key management
+
+### Viewing your keys
+
+All API keys for your account are listed on the **API Keys** page. Each entry shows:
+- Key name
+- Creation date
+- Last used date
+- User assigned to
+
+### Rotating a key
+
+To rotate a key without downtime:
+
+1. **Create a new key** with a descriptive name (e.g., `Production-v2`)
+2. **Update your application** to use the new key
+3. **Test thoroughly** in sandbox
+4. **Delete the old key** once you've verified everything works
+
+### Deleting a key
+
+1. Navigate to **API Keys**
+2. Find the key you want to delete
+3. Click the delete icon
+4. Confirm the deletion
+
+Any requests using a deleted key will receive a `401 Unauthorized` response.
+
+## Security best practices
+
+### Environment variables
+
+Never hardcode API keys in your source code. Use environment variables instead:
+
+<CodeGroup>
+```bash
+export ORCHESTRA_API_KEY="your_api_key_here"
+```
+
+```javascript Node.js
+const apiKey = process.env.ORCHESTRA_API_KEY;
+```
+
+```python Python
+import os
+api_key = os.getenv("ORCHESTRA_API_KEY")
+```
+
+```go Go
+package main
+import "os"
+apiKey := os.Getenv("ORCHESTRA_API_KEY")
+```
+</CodeGroup>
+
+### .gitignore
+
+Add environment files to your `.gitignore` to prevent accidental commits:
+
+```
+.env
+.env.local
+.env.*.local
+```
+
+### Key scoping
+
+If your platform supports it, consider creating separate keys for:
+- **Development** — for testing and debugging
+- **Staging** — for pre-production validation
+- **Production** — for live transactions
+
+This limits exposure if any single key is compromised.
+
+### Audit and rotation
+
+- **Rotate keys regularly** — at least quarterly for production
+- **Monitor usage** — check "last used" dates on the API Keys page
+- **Delete unused keys** — remove keys you no longer need
+- **Alert on compromise** — immediately rotate if you suspect a key is exposed
+
+## Error handling
+
+### 401 Unauthorized
+
+This means your API key is missing, invalid, or expired.
+
+```json
+{
+  "fieldName": "X-Api-Key",
+  "errors": ["API key is missing or invalid"]
+}
+```
+
+**Solutions:**
+- Verify the `X-Api-Key` header is present in your request
+- Confirm the key value is correct (no extra spaces)
+- Check that the key hasn't been deleted
+- Ensure you're using the correct endpoint URL
+
+### Testing your key
+
+Use the validation endpoint to verify your key is working:
+
+<CodeGroup>
+```bash cURL
+curl -s "https://api.orchestrasolutions.com/Utils/apiKey" \
+  -H "X-Api-Key: YOUR_API_KEY"
+```
+
+```javascript Node.js
+const res = await fetch("https://api.orchestrasolutions.com/Utils/apiKey", {
+  headers: { "X-Api-Key": process.env.ORCHESTRA_API_KEY }
+});
+const data = await res.json();
+console.log(data);
+```
+</CodeGroup>
+
+Expected response:
+
+```json
+{
+  "status": "OK",
+  "userName": "your_email@example.com",
+  "accountId": 12345,
+  "isSandbox": true
+}
+```
+
+If `isSandbox` is `true`, you're using a sandbox key. For production, it will be `false`.
+
+## Next steps
+
+- **[Make your first charge](/make-first-charge)** — Use your API key to process a payment
+- **[Sandbox environment](/sandbox)** — Test securely before going live
+- **[API reference](/api-reference)** — Explore all available endpoints
