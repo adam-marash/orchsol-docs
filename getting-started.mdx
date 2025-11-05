@@ -1,0 +1,159 @@
+---
+title: "Getting Started"
+description: "Sign up for sandbox, generate an API key, and make your first API call"
+---
+
+# Getting started with Orchestra Solutions
+
+Orchestra is a payment orchestration platform. With a single API integration, you can route payments across multiple providers worldwide, support regional payment methods, and meet compliance requirements without building separate integrations for each market and provider.
+
+By following this guide, you'll sign up for the Orchestra Solutions sandbox, generate your first API key, and make a successful API call. The goal is to get you started quickly, make sure you can connect to the API, and give you a starting point for exploring and building with Orchestra.
+
+## Learning outcomes
+
+By the end of this guide you will be able to:
+
+- **Work in the sandbox environment** after creating your API key
+- **Authenticate with Orchestra's APIs**, proving you can connect securely and reliably
+- **Send and validate a request**, confirming that the platform responds as expected
+- **Choose your next step** by branching into product-specific guides
+
+## How Orchestra fits together
+
+Before we get hands-on, let's understand how the different parts of the Orchestra platform fit together:
+
+<Columns cols={2}>
+  <div>
+    **Universal Payment Gateway (UPG)**
+    The core server-side API for creating charges, refunds, and routing payments across providers.
+  </div>
+  <div>
+    **Payments Library**
+    A JavaScript SDK for handling payment buttons and wallet flows in the browser.
+  </div>
+  <div>
+    **Payment Gateway Accounts**
+    Secure storage for your (or your customers') merchant credentials, used when routing through the UPG.
+  </div>
+  <div>
+    **Supporting services**
+    Tools like String Tokens for vaulting sensitive data and other utilities.
+  </div>
+</Columns>
+
+## Register for the sandbox
+
+Orchestra provides two environments: **Sandbox** and **Production**.
+
+- **The Sandbox** is where you can learn the API, experiment, and start to build your integration without touching real transactions. Anyone can create an account to work with the Sandbox.
+- **Production** is where you'll run production workloads. As with many financial services APIs, you can request access following review from our team.
+
+**Create your account** at [orchestrasolutions.com/sandbox](https://orchestrasolutions.com/sandbox/)
+
+<Frame>
+  ![Sandbox registration](/images/orchestra-sandbox-register.png)
+</Frame>
+
+## Generate an API key
+
+After logging into the [developer dashboard](https://portal.epaytools.com/), open the **Settings** menu under your name in the top-right corner. Select **API Keys**.
+
+<Frame>
+  ![API Keys menu](/images/api-keys-menu-entry.png)
+</Frame>
+
+On the **API Keys** page you can view and manage your existing keys (for example, delete or rotate a key when needed). As you've just registered, the keys list will be empty. Let's create your first Sandbox key.
+
+<Frame>
+  ![Create API key](/images/create-api-key.png)
+</Frame>
+
+- **Name:** Give the key a descriptive label (for example, `Test key` or `CI/CD pipeline`)
+- **Username:** You'll only see your own user account listed. In the future when working in a team, you'll have the option to create keys for other users
+- **Assign it to my user:** Check this box to tie the key directly to your user account
+
+Click **Save** to create the key.
+
+A modal will open showing your new API key. **Copy the key right away** as you won't be able to view it again.
+
+## Make your first API call
+
+Now that you have a Sandbox API key, let's use it to verify everything is working.
+
+<CodeGroup>
+```bash cURL
+curl -s "https://api.epaytools.com/Utils/apiKey" \
+  -H "X-Api-Key: $ORCHESTRA_API_KEY"
+```
+
+```javascript Node.js
+const res = await fetch("https://api.epaytools.com/Utils/apiKey", {
+  headers: {
+    "X-Api-Key": process.env.ORCHESTRA_API_KEY, // replace with your key
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log(data);
+```
+</CodeGroup>
+
+If all goes well, you should see a response like:
+
+```json
+{
+  "status": "OK",
+  "userName": "sandbox_user@example.com",
+  "accountId": 12345,
+  "isSandbox": true
+}
+```
+
+<Warning>
+### Troubleshooting
+
+If you use the wrong API key:
+
+- With **cURL**, you may see no output at all (silent `401 Unauthorized`)
+- With **JavaScript**, you may see a "JSON parse error" because the response body is empty
+
+In both cases, double-check the `X-Api-Key` header value.
+</Warning>
+
+## Next steps
+
+Now you've registered with Orchestra, generated a sandbox API key, and verified your connection to the API.
+
+Before you can make a test payment in the sandbox, you need to:
+
+### 1. Choose how you'll handle payment credentials
+
+- **Processing payments only for your own business?**
+  Pass your gateway credentials directly in each UPG request. This is the simplest way to get started.
+- **Processing payments on behalf of your customers?**
+  Use **Payment Gateway Accounts** to securely vault each customer's merchant credentials once, then reference them in UPG requests. This avoids handling sensitive data in your own systems.
+
+### 2. Handle payment details
+
+Decide how payment data enters your flow:
+- Use the **Payments Library** (JavaScript SDK) to collect card and wallet details in the browser
+- Or use **String Tokens** to vault card numbers or other sensitive values server-side
+
+### 3. Make a payment with the UPG
+
+With credentials and payment details in place, call the **Universal Payment Gateway (UPG)** to create a sandbox charge, capture funds, or issue a refund.
+
+### 4. Go live in production
+
+When you're ready, request production access, generate a production API key, and swap your sandbox credentials for live ones.
+
+<Tabs>
+  <Tab title="For your own business">
+    Skip gateway accounts and go straight to **[Make your first charge](/make-first-charge)**.
+  </Tab>
+  <Tab title="For your customers">
+    First, **[create a Gateway Account](/gateway-accounts)** to vault your customers' credentials.
+    Then continue to **[Make your first charge](/make-first-charge)**.
+  </Tab>
+</Tabs>

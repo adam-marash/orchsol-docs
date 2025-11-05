@@ -1,0 +1,146 @@
+---
+title: "Make Your First Charge"
+description: "Create a sandbox charge with direct gateway credentials"
+---
+
+# Make your first charge
+
+Orchestra gives you two ways to handle payment gateway details:
+
+1. **Provide them directly** in each request by including the gateway credentials inline
+   → Fastest way to get started, ideal for testing or where you're taking payments on behalf of your own business
+2. **Store them in a Payment Gateway Account** and reference that account by name
+   → Best used when you're processing payments on behalf of your customers, or when you want to avoid managing credentials in your own systems
+
+In this guide, we'll focus on the first approach: creating a charge using your sandbox credentials directly.
+
+<Info>
+**Don't have sandbox credentials yet?** Follow [Getting started with Orchestra](/getting-started) to create an account and verify your API key.
+</Info>
+
+## Learning outcomes
+
+After following this guide, you will have:
+
+- Created your first sandbox charge
+- Understood how to pass gateway credentials directly in a UPG request
+- Verified that payment routing works as expected
+
+## Selecting a payment gateway
+
+Orchestra lets you connect to many different payment gateways worldwide. In the sandbox, you can choose any supported gateway — the goal is simply to prove you can send a charge successfully.
+
+Different gateways expect slightly different credentials and request fields. To keep this guide concrete, we'll use **Stripe** as the example.
+
+<Info>
+**Different gateways, different credentials**
+
+To see which credential fields a gateway requires, call:
+```
+GET /PaymentGateway
+```
+
+Check the `credentialsNames` array in the response. Use those exact keys when supplying credentials inline or in a stored account.
+</Info>
+
+## What you'll need
+
+Before making a charge, gather:
+
+- **Your Orchestra API key** (from [Getting started](/getting-started))
+- **Sandbox credentials for your chosen gateway** (e.g., Stripe test keys)
+- **Customer payment details** (card number, expiration, CVC)
+
+## Create a charge
+
+Now let's create a charge by sending a request to the UPG with inline gateway credentials:
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.epaytools.com/Charge" \
+  -H "X-Api-Key: $ORCHESTRA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 1000,
+    "currency": "USD",
+    "gatewayName": "stripe",
+    "gatewayCredentials": {
+      "apiKey": "sk_test_YOUR_STRIPE_KEY"
+    },
+    "paymentDetails": {
+      "cardNumber": "4242424242424242",
+      "expiryMonth": 12,
+      "expiryYear": 2025,
+      "cvc": "123"
+    }
+  }'
+```
+
+```javascript Node.js
+const res = await fetch("https://api.epaytools.com/Charge", {
+  method: "POST",
+  headers: {
+    "X-Api-Key": process.env.ORCHESTRA_API_KEY,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    amount: 1000,
+    currency: "USD",
+    gatewayName: "stripe",
+    gatewayCredentials: {
+      apiKey: process.env.STRIPE_TEST_KEY
+    },
+    paymentDetails: {
+      cardNumber: "4242424242424242",
+      expiryMonth: 12,
+      expiryYear: 2025,
+      cvc: "123"
+    }
+  })
+});
+
+const charge = await res.json();
+console.log(charge);
+```
+</CodeGroup>
+
+## Response
+
+If successful, you'll receive a response like:
+
+```json
+{
+  "chargeId": "ch_12345abcde",
+  "status": "completed",
+  "amount": 1000,
+  "currency": "USD",
+  "gateway": "stripe",
+  "created": "2024-11-05T10:30:00Z"
+}
+```
+
+<Success>
+Congratulations! You've successfully created your first charge with Orchestra.
+</Success>
+
+## Next steps
+
+Now that you've made a test charge, you can:
+
+- **Explore different gateways** by changing the `gatewayName` and corresponding credentials
+- **Handle refunds** using the same UPG with refund endpoints
+- **Store gateway credentials** by creating a [Payment Gateway Account](/gateway-accounts) for safer, reusable credential management
+- **Integrate the Payments Library** for client-side payment collection
+- **Review the full API** in our [API reference](/api-reference/introduction)
+
+<Tabs>
+  <Tab title="Next: Refunds">
+    Learn how to issue refunds for completed charges.
+  </Tab>
+  <Tab title="Next: Gateway Accounts">
+    Store and reuse gateway credentials securely.
+  </Tab>
+  <Tab title="Next: Payments Library">
+    Collect payment details in the browser with our JavaScript SDK.
+  </Tab>
+</Tabs>
