@@ -1,0 +1,208 @@
+---
+title: "SDKs & Libraries"
+description: "Official SDK packages for Orchestra"
+---
+
+# SDKs & Libraries
+
+Orchestra provides official SDKs for popular programming languages. These libraries handle authentication, request formatting, error handling, and serialization — so you can focus on building.
+
+## Node.js
+
+The official Node.js SDK for Orchestra.
+
+**Install via npm:**
+
+```bash
+npm install orchestra-p18n
+```
+
+**Quick start:**
+
+```javascript
+import Orchestra from 'orchestra-p18n';
+
+const client = new Orchestra({
+  apiKey: process.env.ORCHESTRA_API_KEY
+});
+
+// Make your first charge
+const charge = await client.paymentGateway.charge({
+  amount: 25.00,
+  currency: 'USD',
+  paymentGatewayAccountName: 'my-stripe',
+  card: {
+    cardHolderName: 'John Doe',
+    cardNumber: '4242424242424242',
+    expirationMonth: 12,
+    expirationYear: 2025,
+    cvv: '123'
+  },
+  payerDetails: {
+    clientIPAddress: '127.0.0.1',
+    countryCode: 'US'
+  }
+});
+
+console.log(charge);
+```
+
+**Repository:** [github.com/orchestrasolutions/orchestra-node](https://github.com/orchestrasolutions/orchestra-node)
+
+**Package:** [npmjs.com/package/orchestra-p18n](https://www.npmjs.com/package/orchestra-p18n)
+
+---
+
+## Python
+
+The official Python SDK for Orchestra.
+
+**Install via pip:**
+
+```bash
+pip install orchestra-p18n
+```
+
+**Quick start:**
+
+```python
+import os
+from orchestra import Orchestra
+
+client = Orchestra(
+    api_key=os.getenv("ORCHESTRA_API_KEY")
+)
+
+# Make your first charge
+charge = client.payment_gateway.charge(
+    amount=25.00,
+    currency="USD",
+    payment_gateway_account_name="my-stripe",
+    card={
+        "card_holder_name": "John Doe",
+        "card_number": "4242424242424242",
+        "expiration_month": 12,
+        "expiration_year": 2025,
+        "cvv": "123"
+    },
+    payer_details={
+        "client_ip_address": "127.0.0.1",
+        "country_code": "US"
+    }
+)
+
+print(charge)
+```
+
+**Repository:** [github.com/orchestrasolutions/orchestra-python](https://github.com/orchestrasolutions/orchestra-python)
+
+**Package:** [pypi.org/project/orchestra-p18n](https://pypi.org/project/orchestra-p18n/)
+
+---
+
+## Go
+
+The official Go SDK for Orchestra.
+
+**Install:**
+
+```bash
+go get github.com/orchestrasolutions/orchestra-go
+```
+
+**Quick start:**
+
+```go
+package main
+
+import (
+  "fmt"
+  "os"
+  "github.com/orchestrasolutions/orchestra-go"
+)
+
+func main() {
+  client := orchestra.NewClient(os.Getenv("ORCHESTRA_API_KEY"))
+
+  // Make your first charge
+  charge, err := client.PaymentGateway.Charge(ctx, &orchestra.ChargeRequest{
+    Amount:   25.00,
+    Currency: "USD",
+    PaymentGatewayAccountName: "my-stripe",
+    Card: &orchestra.Card{
+      CardHolderName:   "John Doe",
+      CardNumber:       "4242424242424242",
+      ExpirationMonth:  12,
+      ExpirationYear:   2025,
+      CVV:              "123",
+    },
+    PayerDetails: &orchestra.PayerDetails{
+      ClientIPAddress: "127.0.0.1",
+      CountryCode:     "US",
+    },
+  })
+
+  if err != nil {
+    fmt.Println("Error:", err)
+  } else {
+    fmt.Printf("Charge: %+v\n", charge)
+  }
+}
+```
+
+**Repository:** [github.com/orchestrasolutions/orchestra-go](https://github.com/orchestrasolutions/orchestra-go)
+
+---
+
+## REST API via cURL
+
+If you prefer not to use a library, you can interact with the Orchestra API directly using HTTP.
+
+**Example:**
+
+```bash
+curl -X POST "https://api.orchestrasolutions.com/PaymentGateway/charge" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 25.00,
+    "currency": "USD",
+    "paymentGatewayAccountName": "my-stripe",
+    "card": {
+      "cardHolderName": "John Doe",
+      "cardNumber": "4242424242424242",
+      "expirationMonth": 12,
+      "expirationYear": 2025,
+      "cvv": "123"
+    },
+    "payerDetails": {
+      "clientIPAddress": "127.0.0.1",
+      "countryCode": "US"
+    }
+  }'
+```
+
+See the [API Reference](/api-reference) for complete endpoint documentation.
+
+---
+
+## Features
+
+All official SDKs include:
+
+- **Automatic authentication** — API key handling built-in
+- **Type safety** — Full type definitions for requests and responses
+- **Error handling** — Descriptive error messages and retry logic
+- **Request validation** — Catch errors before sending to Orchestra
+- **Async support** — Non-blocking operations where applicable
+- **Timeout management** — Configurable timeouts for API calls
+- **Logging** — Debug mode for troubleshooting
+
+---
+
+## Next steps
+
+- **[Make your first charge](/make-first-charge)** — Process a test payment
+- **[Authentication](/authentication)** — Manage API keys
+- **[Error Reference](/errors)** — Handle errors gracefully
+- **[API Reference](/api-reference)** — Full endpoint documentation

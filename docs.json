@@ -20,7 +20,8 @@
             "pages": [
               "index",
               "getting-started",
-              "make-first-charge"
+              "make-first-charge",
+              "sdks"
             ]
           },
           {

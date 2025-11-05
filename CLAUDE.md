@@ -31,6 +31,15 @@ Building developer documentation for Orchestra, a payment orchestration service 
 ## Technical Stack
 - **Platform**: Mintlify - hosted documentation with MDX support
 - **Format**: Markdown with MDX components for visual enhancement
-- **Repo structure**: GitHub repo with `docs/` directory for content
+- **Repo structure**: GitHub repo with root-level markdown files for content
 - **API spec**: OpenAPI 3.0.4 (`orchsol.json`) for auto-generated reference
 - **Deployment**: GitHub → Mintlify pipeline (automatic on push)
+
+## Required Information - To Be Provided
+- **SDK Package Locations**: Where to download/install official SDKs
+  - npm package URL (Node.js)
+  - PyPI package URL (Python)
+  - Go module path
+  - Other language SDKs
+  - Currently using dummy: https://www.npmjs.com/package/orchestra-p18n
+  - **ACTION REQUIRED**: Update SDKs page and integration guides once real URLs are available
